@@ -26,7 +26,7 @@ namespace Prompty.Server.Controllers
         {
             try
             {
-                string systemPromptPath = Path.Combine(_env.ContentRootPath, "/" + prompt.RequestedPrompt);
+                string systemPromptPath = Path.Combine(_env.ContentRootPath, "./" + prompt.RequestedPrompt);
                 string systemPrompt = await System.IO.File.ReadAllTextAsync(systemPromptPath);
                 var responses = await _openAi.GenerateResponsesAsync(systemPromptPath, prompt.UserPrompt);
                 return Ok(responses);
