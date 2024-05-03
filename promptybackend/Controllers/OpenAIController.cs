@@ -21,11 +21,28 @@ namespace Prompty.Server.Controllers
             _openAi = openAi;
         }
 
+        static void PrintDirectories(string path)
+        {
+            try
+            {
+                foreach (string directory in Directory.GetDirectories(path))
+                {
+                    Console.WriteLine(directory);
+                    PrintDirectories(directory);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("An error occurred: " + e.Message);
+            }
+        }
+
         [HttpPost("generate")]
         public async Task<ActionResult<IEnumerable<string>>> Generate([FromBody] Prompt prompt)
         {
             try
             {
+                PrintDirectories(Directory.GetCurrentDirectory());
                 string systemPromptPath = Path.Combine(_env.ContentRootPath, "./" + prompt.RequestedPrompt);
                 string systemPrompt = await System.IO.File.ReadAllTextAsync(systemPromptPath);
                 var responses = await _openAi.GenerateResponsesAsync(systemPromptPath, prompt.UserPrompt);
