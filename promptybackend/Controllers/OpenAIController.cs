@@ -12,21 +12,23 @@ namespace Prompty.Server.Controllers
     [Route("[controller]")]
     public class OpenAIController : ControllerBase
     {
+        private readonly IHostEnvironment _env;
         private readonly IOpenAIService _openAi;
 
-        public OpenAIController(IOpenAIService openAi)
+        public OpenAIController(IOpenAIService openAi, IHostEnvironment env)
         {
+            _env = env;
             _openAi = openAi;
         }
 
         [HttpPost("generate")]
-        public async Task<ActionResult<IEnumerable<string>>> Generate([FromBody] Prompt promptRequest)
+        public async Task<ActionResult<IEnumerable<string>>> Generate([FromBody] Prompt prompt)
         {
             try
             {
-                string systemPrompt = await System.IO.File.ReadAllTextAsync("./gen.txt");
-                Console.WriteLine(systemPrompt);
-                var responses = await _openAi.GenerateResponsesAsync(systemPrompt, promptRequest.UserPrompt);
+                string systemPromptPath = Path.Combine(_env.ContentRootPath, prompt.RequestedPrompt);
+                string systemPrompt = await System.IO.File.ReadAllTextAsync(systemPromptPath);
+                var responses = await _openAi.GenerateResponsesAsync(systemPromptPath, prompt.UserPrompt);
                 return Ok(responses);
             }
             catch (FileNotFoundException ex)
