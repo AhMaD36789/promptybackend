@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using promptybackend;
 
 namespace prompty_backend.Controllers
 {
